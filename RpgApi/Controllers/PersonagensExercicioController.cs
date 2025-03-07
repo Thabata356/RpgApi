@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using RpgApi.Models;
 using RpgApi.Models.Enuns;
 
+//Luiza Gonçalves e Thabata Vitoria
+
 namespace RpgApi.Controllers
 {
     [ApiController]
@@ -30,8 +32,9 @@ namespace RpgApi.Controllers
         {
             List<Personagem> listaBusca = personagens.FindAll(p => p.Nome.Contains(nome));
 
-            if (listaBusca == null)
+            if (listaBusca.Count == 0){
                 return NotFound("Nenhum personagem com esse nome foi encontrado.");
+            }
 
             return Ok(listaBusca);
         }
@@ -47,20 +50,22 @@ namespace RpgApi.Controllers
         [HttpGet("GetEstatisticas")]
         public IActionResult GetEstatisticas()
         {
-            var info = new
-            {
-                pesonagem = "Quantidade de personagens" + personagens.Count,
-                conta = "A soma da inteligência de todos ods personagens é " +personagens.Sum(p => p.Inteligencia)
-            };
-              
-                return Ok (info);             
+            return Ok($"Quantidade de personagens: {personagens.Count}\n" + 
+            $"Soma da inteligência dos personagens: {personagens.Sum(p => p.Inteligencia)}");             
         }
 
         [HttpPost("PostValidacao")]
         public IActionResult PostValidacao(Personagem novoPersonagem)
         {
-            if(novoPersonagem.Defesa <10  || novoPersonagem.Inteligencia >30)
-                return BadRequest("Personagem não pode ter defsa menor de 10 ou inteligência maior que 30.");
+            if(novoPersonagem.Defesa < 10 && novoPersonagem.Inteligencia > 30){
+                return BadRequest("O personagem não pode ter defesa menor que 10 ou inteligência maior que 30.");
+            }
+            else if(novoPersonagem.Defesa < 10){
+                return BadRequest("O personagem não pode ter defesa menor que 10.");
+            }
+            else if(novoPersonagem.Inteligencia > 30){
+                return BadRequest("O personagem não pode ter inteligência maior que 30.");
+            }
 
             personagens.Add(novoPersonagem);
             return Ok(personagens);
@@ -69,17 +74,19 @@ namespace RpgApi.Controllers
         [HttpPost("PostValidacaoMago")]
         public IActionResult PostValidacaoMago(Personagem novoPersonagem)
         {
-            if(novoPersonagem.Classe == ClasseEnum.Mago && novoPersonagem.Inteligencia <35)
+            if(novoPersonagem.Classe == ClasseEnum.Mago && novoPersonagem.Inteligencia < 35)
+            {
                 return BadRequest("Magos não podem ter inteligencia menor que 35.");
+            }
 
             personagens.Add(novoPersonagem);
             return Ok(personagens);
         }
 
-        [HttpGet("GetByClasse")]
-        public IActionResult GetByClasse()
+        [HttpGet("GetByClasse/{classe}")]
+        public IActionResult GetByClasse(int classe)
         {
-            List<Personagem> listaFinal = personagens.OrderBy(p => p.Classe).ToList();
+            List<Personagem> listaFinal = personagens.Where(p => (int)p.Classe == classe).ToList();
 
             return Ok(listaFinal);
         }
