@@ -34,9 +34,9 @@ namespace RpgApi.Controllers
 
             if (listaBusca.Count == 0){
                 return NotFound("Nenhum personagem com esse nome foi encontrado.");
+            } else{
+                return Ok(listaBusca);
             }
-
-            return Ok(listaBusca);
         }
 
         [HttpGet("GetClerigoMago")]
@@ -86,6 +86,9 @@ namespace RpgApi.Controllers
         [HttpGet("GetByClasse/{classe}")]
         public IActionResult GetByClasse(int classe)
         {
+            //ClasseEnum tipoEnum = (ClassEnum)classe -> Força a variável a ser um Enum
+            //List<Personagem> listaFinal = personagens.FindAll(p => p.Classe == tipoEnum)
+
             List<Personagem> listaFinal = personagens.Where(p => (int)p.Classe == classe).ToList();
 
             return Ok(listaFinal);
