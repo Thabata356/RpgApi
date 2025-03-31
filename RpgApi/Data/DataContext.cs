@@ -17,10 +17,12 @@ namespace RpgApi.Data
         }
 
         public DbSet<Personagem> TB_PERSONAGENS { get; set; }
+        public DbSet<Arma> TB_ARMAS { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder) //Durante a criação do modelo de Banco, faça algo
+        protected override void OnModelCreating(ModelBuilder modelBuilder) //Durante a criação do modelo de Banco, faça algo. Só pode ter uma classe OnModelCreating
         {
             modelBuilder.Entity<Personagem>().ToTable("TB_PERSONAGENS");
+            modelBuilder.Entity<Arma>().ToTable("TB_ARMAS");
 
             modelBuilder.Entity<Personagem>().HasData
             (
@@ -35,6 +37,21 @@ namespace RpgApi.Data
             //ALT + Shift + F -> Identar/ajustar código
 
             //base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Arma>().HasData
+            (
+              new Arma() { Id = 1, Nome = "Arco e Flecha", Dano = 35},
+              new Arma() { Id = 2, Nome = "Espada", Dano = 33},
+              new Arma() { Id = 3, Nome = "Machado", Dano = 31 },
+              new Arma() { Id = 4, Nome = "Punho", Dano = 30},
+              new Arma() { Id = 5, Nome = "Chicote", Dano = 34},
+              new Arma() { Id = 6, Nome = "Foice", Dano = 33 },
+              new Arma() { Id = 7, Nome = "Cajado", Dano = 32}
+            );
+        }
+
+        protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+        {
+            configurationBuilder.Properties<string>().HaveColumnType("Varchar").HaveMaxLength(200);
         }
 
     }
