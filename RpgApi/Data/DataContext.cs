@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using RpgApi.Models;
 using RpgApi.Models.Enuns;
 using RpgApi.Utils;
+//Fazer até o exer 9
 
 namespace RpgApi.Data
 {
