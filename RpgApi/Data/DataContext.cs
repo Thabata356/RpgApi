@@ -21,7 +21,6 @@ namespace RpgApi.Data
         public DbSet<Personagem> TB_PERSONAGENS { get; set; }
         public DbSet<Arma> TB_ARMAS { get; set; }
         public DbSet<Usuario> TB_USUARIOS { get; set; }
-        public object Criptografia { get; private set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) //Durante a criação do modelo de Banco, faça algo. Só pode ter uma classe OnModelCreating
         {
@@ -62,7 +61,7 @@ namespace RpgApi.Data
 
             //Inicio da criação do usuário padrão.
             Usuario user = new Usuario();
-            Criptografia.CriarPasswordHash("123456", out byte[] hash, out byte[]salt);
+            Criptografia.CriarPasswordHash("123456", out byte[] hash, out byte[] salt);
             user.Id = 1;
             user.Username = "UsuarioAdmin";
             user.PasswordString = string.Empty;
