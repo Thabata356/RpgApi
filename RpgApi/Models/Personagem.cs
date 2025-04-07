@@ -16,5 +16,8 @@ namespace RpgApi.Models
         public int Defesa { get; set; }
         public int Inteligencia { get; set; }
         public ClasseEnum Classe { get; set; }
+        public byte[]? FotoPersonagem { get; set; }
+        public int? UsuarioId { get; set; }
+        public Usuario? Usuario { get; set; }
     }
 }
