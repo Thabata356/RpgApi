@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using RpgApi.Models;
 using RpgApi.Models.Enuns;
 using RpgApi.Utils;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+
 //Fazer até o exer 9
 
 namespace RpgApi.Data
@@ -117,6 +119,12 @@ namespace RpgApi.Data
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
         {
             configurationBuilder.Properties<string>().HaveColumnType("Varchar").HaveMaxLength(200);
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) // Elimina o erro do dotnet database update
+        {
+            optionsBuilder.ConfigureWarnings(warnings =>
+              warnings.Ignore(RelationalEventId.PendingModelChangesWarning));
         }
 
     }
