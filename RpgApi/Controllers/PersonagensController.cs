@@ -26,6 +26,9 @@ namespace RpgApi.Controllers
             try
             {
                 Personagem p = await _context.TB_PERSONAGENS
+                    .Include(ar => ar.Arma)//Carrega a propriedade Arma do objeto p
+                    .Include(ph => ph.PersonagemHabilidades)
+                        .ThenInclude(h => h.Habilidade)//Carrega a lisat de PersonagemHabilidade de p
                     .FirstOrDefaultAsync(pBusca => pBusca.Id == id);
 
                 return Ok(p);
