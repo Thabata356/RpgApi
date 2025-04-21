@@ -12,7 +12,7 @@ namespace RpgApi.Models
         public int Id { get; set; }
         public string Username { get; set; } = string.Empty; //Declarar valor inicial vazio
         public byte[]? PasswordHash { get; set; } // ? --> Indica que o dado pode ser nulo
-        public byte[]? PassworSalt { get; set; }
+        public byte[]? PasswordSalt { get; set; }
         public byte[]? Foto { get; set; }
         public double? Latitude { get; set; }
         public double? Longitude { get; set; }

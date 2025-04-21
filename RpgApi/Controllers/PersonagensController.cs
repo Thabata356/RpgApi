@@ -6,6 +6,7 @@ using RpgApi.Models;
 using System.Linq;
 using System.Threading.Tasks;
 using RpgApi.Models.Enuns;
+using System.Collections.Generic;
 
 namespace RpgApi.Controllers
 {
@@ -26,9 +27,10 @@ namespace RpgApi.Controllers
             try
             {
                 Personagem p = await _context.TB_PERSONAGENS
-                    .Include(ar => ar.Arma)//Carrega a propriedade Arma do objeto p
+                    .Include(ar => ar.Arma) //Carrega a propriedade Arma do objeto p
                     .Include(ph => ph.PersonagemHabilidades)
-                        .ThenInclude(h => h.Habilidade)//Carrega a lisat de PersonagemHabilidade de p
+                        .ThenInclude(h => h.Habilidade) //Carrega a lista de PersonagemHabilidade de p
+                    .Include(u => u.Usuario) //Carrega os dados do usuário correspondente
                     .FirstOrDefaultAsync(pBusca => pBusca.Id == id);
 
                 return Ok(p);

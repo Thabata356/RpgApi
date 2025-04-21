@@ -103,7 +103,7 @@ namespace RpgApi.Data
             user.Username = "UsuarioAdmin";
             user.PasswordString = string.Empty;
             user.PasswordHash = hash;
-            user.PassworSalt = salt;
+            user.PasswordSalt = salt;
             user.Perfil = "Admin";
             user.Email = "seuEmail@gmail.com";
             user.Latitude = -23.5200241;

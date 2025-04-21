@@ -30,7 +30,8 @@ namespace RpgApi.Controllers
 
         [HttpPost("Registrar")]
         public async Task<IActionResult> RegistraUsuario(Usuario user){
-            try{
+            try
+            {
                 if(await UsuarioExistente(user.Username)){
                     throw new System.Exception("Nome de usuário já existe");
                 }
@@ -58,13 +59,13 @@ namespace RpgApi.Controllers
                 if(usuario == null){
                     throw new System.Exception("Usuário não encontrado.");
                 }
-                else if(!Criptografia.VerificarPasswordHash(credenciais.PasswordString, usuario.PasswordHash, usuario.PassworSalt)){
+                else if(!Criptografia.VerificarPasswordHash(credenciais.PasswordString, usuario.PasswordHash, usuario.PasswordSalt)){
                     throw new System.Exception("Senha incorreta.");
                 }
                 else{
 
                     //var date = DateTime.UtcNow();
-                    var date = DateTime.Now();
+                    var date = DateTime.Now;
                     Console.WriteLine(date);
                     usuario.DataAcesso = date; 
                     await _context.SaveChangesAsync();
@@ -84,6 +85,7 @@ namespace RpgApi.Controllers
             {
             Usuario? usuario = await _context.TB_USUARIOS
                 .FirstOrDefaultAsync(u => u.Username.ToLower().Equals(credenciais.Username.ToLower()));
+                // Ou simplesmente u => u.Username.ToLower() == credenciais.Username.ToLower()
 
             if(usuario == null){
                 throw new System.Exception("Usuário não encontrado.");
@@ -102,12 +104,12 @@ namespace RpgApi.Controllers
             }
         }
 
-        [HttpGet("GetTodos")]
-        public async Task<IActionResult> GetTodos(Usuario user){
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> GetAll(){
 
             try
             {
-                List<Personagem> lista = await _context.TB_USUARIOS.ToListAsync();
+                List<Usuario> lista = await _context.TB_USUARIOS.ToListAsync();
                 return Ok(lista);
             }
             catch (System.Exception ex)

@@ -22,6 +22,39 @@ namespace RpgApi.Controllers
             _context = context;
         }
 
+        [HttpGet("GetHabilidadesDoPersonagem/{id}")]
+        public async Task<IActionResult> GetHabilidadesDoPersonagem(int id)
+        {
+            try{
+
+                // Ou apenas var h = await...
+                List<PersonagemHabilidade> ph = await _context.TB_PERSONAGENS_HABILIDADES
+                    .Include(h => h.Habilidade)
+                    .Where(p => p.PersonagemId == id)
+                    .ToListAsync();
+
+                return Ok(ph);
+
+            } catch (System.Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("GetHabilidades")]
+        public async Task<IActionResult> GetHabilidades()
+        {
+            try{
+                List<Habilidade> listaHabilidades = await _context.TB_HABILIDADES.ToListAsync();
+
+                return Ok(listaHabilidades);
+
+            } catch (System.Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> AddPersonagemHabilidadedAsync(PersonagemHabilidade novoPersonagemHabilidade)
         {
@@ -49,12 +82,47 @@ namespace RpgApi.Controllers
 
                 return Ok (linhaAfetadas);
             }
-
             catch (System.Exception ex)
             {
                 return BadRequest(ex.Message);
             }
 
+        }
+
+        [HttpPost("DeletePersonagemHabilidade")]
+        public async Task<IActionResult> DeletePersonagemHabilidade(PersonagemHabilidade ph)
+        {
+            try{
+                var personagem = await _context.TB_PERSONAGENS
+                    .FirstOrDefaultAsync(p => p.Id == ph.PersonagemId);
+
+                if (personagem == null){
+                    return NotFound("O Id fornecido não está vinculado a um Personagem");
+                }
+
+                var habilidade = await _context.TB_HABILIDADES
+                    .FirstOrDefaultAsync(h => h.Id == ph.HabilidadeId);
+
+                if (habilidade == null){
+                    return NotFound("O Id fornecido não está vinculado a uma Habilidade.");
+                }
+
+                var phRemover = await _context.TB_PERSONAGENS_HABILIDADES
+                    .FirstOrDefaultAsync(p => p.PersonagemId == ph.PersonagemId && p.HabilidadeId == ph.HabilidadeId);
+                
+                if (phRemover == null){
+                    return NotFound("O Personagem e a Habilidade fornecidos não estão vinculados entre si.");
+                }
+
+                 _context.TB_PERSONAGENS_HABILIDADES.Remove(phRemover);
+                await _context.SaveChangesAsync();
+
+                return Ok("Habilidade removida com sucesso do Personagem.");
+
+            } catch (System.Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
     }
