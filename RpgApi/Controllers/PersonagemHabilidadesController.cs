@@ -28,10 +28,14 @@ namespace RpgApi.Controllers
             try{
 
                 // Ou apenas var h = await...
-                List<PersonagemHabilidade> ph = await _context.TB_PERSONAGENS_HABILIDADES
-                    .Include(h => h.Habilidade)
+                List<PersonagemHabilidade> ph = new List<PersonagemHabilidade>(); // await _context.TB_PERSONAGENS_HABILIDADES
+                ph = await _context.TB_PERSONAGENS_HABILIDADES
+                .Include(p => p.Personagem)
+                .Include(p => p.Habilidade)
+                .Where(p => p.PersonagemId == id).ToListAsync();
+                    /*.Include(h => h.Habilidade)
                     .Where(p => p.PersonagemId == id)
-                    .ToListAsync();
+                    .ToListAsync();*/
 
                 return Ok(ph);
 
@@ -46,6 +50,8 @@ namespace RpgApi.Controllers
         {
             try{
                 List<Habilidade> listaHabilidades = await _context.TB_HABILIDADES.ToListAsync();
+                /*List<Habilidade> listaHabilidades = new List<Habilidade>(); 
+                listaHabilidades = await _context.TB_HABILIDADES.ToListAsync();*/
 
                 return Ok(listaHabilidades);
 
@@ -93,7 +99,18 @@ namespace RpgApi.Controllers
         public async Task<IActionResult> DeletePersonagemHabilidade(PersonagemHabilidade ph)
         {
             try{
-                var personagem = await _context.TB_PERSONAGENS
+                PersonagemHabilidade? phRemover = await _context.TB_PERSONAGENS_HABILIDADES
+                        .FirstOrDefaultAsync(phBusca => phBusca.PersonagemId == ph.PersonagemId && phBusca.HabilidadeId == ph.HabilidadeId);
+                
+                    if(phRemover == null){
+                        throw new System.Exception("Personagem ou Habilidade não encontrados");
+                    }
+
+                    _context.TB_PERSONAGENS_HABILIDADES.Remove(phRemover);
+                    int linhasAfetadas = await _context.SaveChangesAsync();
+                    return Ok("Habilidade removida com sucesso do Personagem." + linhasAfetadas);
+
+                /*var personagem = await _context.TB_PERSONAGENS
                     .FirstOrDefaultAsync(p => p.Id == ph.PersonagemId);
 
                 if (personagem == null){
@@ -115,9 +132,7 @@ namespace RpgApi.Controllers
                 }
 
                  _context.TB_PERSONAGENS_HABILIDADES.Remove(phRemover);
-                await _context.SaveChangesAsync();
-
-                return Ok("Habilidade removida com sucesso do Personagem.");
+                await _context.SaveChangesAsync();*/
 
             } catch (System.Exception ex)
             {

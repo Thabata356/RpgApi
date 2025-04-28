@@ -65,10 +65,15 @@ namespace RpgApi.Controllers
                 else{
 
                     //var date = DateTime.UtcNow();
-                    var date = DateTime.Now;
-                    Console.WriteLine(date);
-                    usuario.DataAcesso = date; 
+                    //var date = DateTime.Now;
+                    //Console.WriteLine(date);
+                    //usuario.DataAcesso = date;
+                    usuario.DataAcesso = DateTime.Now;
+                    _context.TB_USUARIOS.Update(usuario);
                     await _context.SaveChangesAsync();
+
+                    usuario.PasswordHash = null; // Remoção do Hash/Salt para não transitar no retorno da requisição
+                    usuario.PasswordSalt = null;
 
                     return Ok(usuario);
                 }
@@ -83,20 +88,22 @@ namespace RpgApi.Controllers
             
             try
             {
-            Usuario? usuario = await _context.TB_USUARIOS
+            Usuario? usuario = await _context.TB_USUARIOS // Busca usuário no BD por login
                 .FirstOrDefaultAsync(u => u.Username.ToLower().Equals(credenciais.Username.ToLower()));
                 // Ou simplesmente u => u.Username.ToLower() == credenciais.Username.ToLower()
 
             if(usuario == null){
                 throw new System.Exception("Usuário não encontrado.");
             }
-                Criptografia.CriarPasswordHash(credenciais.PasswordString, out byte[] hash, out byte[] salt);
-                usuario.PasswordString = string.Empty;
-                usuario.PasswordHash = hash;
-                usuario.PasswordSalt = salt;
-                await _context.SaveChangesAsync();
+                Criptografia.CriarPasswordHash(credenciais.PasswordString, out byte[] hash, out byte[] salt); 
+                //usuario.PasswordString = string.Empty;
+                usuario.PasswordHash = hash; // Caso o usuário exista, executa a crptografia
+                usuario.PasswordSalt = salt; // Guarda a Hash e Salt nas propriedades do usuário
 
-                return Ok("Senha alterada");
+                _context.TB_USUARIOS.Update(usuario);
+                int linhasAfetadas = await _context.SaveChangesAsync(); // Confirma alteração no BD
+
+                return Ok("Senha alterada" + linhasAfetadas);
             }
             catch (System.Exception ex)
             {
