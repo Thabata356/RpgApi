@@ -46,12 +46,12 @@ namespace RpgApi.Controllers
                 await _context.SaveChangesAsync();
 
                 StringBuilder dados = new StringBuilder();
-                dados.AppendFormat("Atacante{0}.", atacante.Nome);
-                dados.AppendFormat("Oponente: {0}",oponente.Nome);
-                dados.AppendFormat("Pontos de vida do atacante{0}.", atacante.PontosVida);
-                dados.AppendFormat("Pontos de vida do oponente{0}.", oponente.PontosVida);
-                dados.AppendFormat("Arma Utilizada: {0}.", atacante.Arma.Nome);
-                dados.AppendFormat("Dano{0}.", dano);
+                dados.AppendFormat(" Atacante: {0}. ", atacante.Nome);
+                dados.AppendFormat(" Oponente: {0}. ",oponente.Nome);
+                dados.AppendFormat(" Pontos de vida do atacante: {0}. ", atacante.PontosVida);
+                dados.AppendFormat(" Pontos de vida do oponente: {0}. ", oponente.PontosVida);
+                dados.AppendFormat(" Arma Utilizada: {0}. ", atacante.Arma.Nome);
+                dados.AppendFormat(" Dano: {0}. ", dano);
 
                 d.Narracao += dados.ToString();
                 d.DataDisputa = DateTime.Now;
@@ -101,7 +101,7 @@ namespace RpgApi.Controllers
                     dados.AppendFormat(" Atacante: {0}. ", atacante.Nome);
                     dados.AppendFormat(" Oponente: {0}. ", oponente.Nome);
                     dados.AppendFormat(" Pontos de vida do atacamte: {0}. ", atacante.PontosVida);
-                    dados.AppendFormat(" Pontos de vida do oponente{0}. ", oponente.PontosVida);
+                    dados.AppendFormat(" Pontos de vida do oponente: {0}. ", oponente.PontosVida);
                     dados.AppendFormat(" Habilidade Utilizada: {0}. ", ph.Habilidade.Nome);
                     dados.AppendFormat(" Dano: {0}", dano);
 
@@ -122,7 +122,7 @@ namespace RpgApi.Controllers
         public async Task<IActionResult> Sorteio()
         {
             List<Personagem> personagens =
-                await _context.Personagens.ToListAsync();
+                await _context.TB_PERSONAGENS.ToListAsync();
 
             //Sorteio com numero da quantidade de personagens
             int sorteio = new Random().Next(personagens.Count);
@@ -131,13 +131,12 @@ namespace RpgApi.Controllers
             Personagem p = personagens[sorteio];
 
             string msg =
-                string.Format("N° Sorteado {0}. Personagem: {1}", sorteio,p.Nome);
+                string.Format("N° Sorteado {0}. Personagem: {1}", sorteio, p.Nome);
 
             return Ok(msg);
         }
 
         [HttpPost("DisputaEmGrupo")]
-
         public async Task<IActionResult> DisputaEmGrupoAsync(Disputa d)
         {
             try
@@ -145,7 +144,7 @@ namespace RpgApi.Controllers
                 d.Resultados = new List<string>();//Instancia a lista de resultados
 
                 //Buscana base dos personagens informados no parametro incluindo Armas e Habilidades
-                List<Personagem> personagens = await _context.Personagens
+                List<Personagem> personagens = await _context.TB_PERSONAGENS
                     .Include(p => p.Arma)
                     .Include(p => p.PersonagemHabilidades).ThenInclude(ph => ph.Habilidade)
                     .Where(p => d.ListaIdPersonagens.Contains(p.Id)).ToListAsync();
@@ -176,7 +175,7 @@ namespace RpgApi.Controllers
 
                     if (ataqueUsaArma && atacante.Arma != null)
                     {
-                        //Programação do ataque com arma caso o atacante possua arma (o != null) do if
+                        //Programação do ataque com arma caso o atacante possua arma (o != null do if)
 
                         //Sorteio da Força
                         dano = atacante.Arma.Dano + (new Random().Next(atacante.Forca));
@@ -188,8 +187,8 @@ namespace RpgApi.Controllers
 
                         //Formata a mensagem
                         resultado = 
-                            string.Format("{0} atacou {1} usado {2} com o dano {3}", atacante.Nome, oponente.Nome, ataqueUsado, dano);
-                        d.Narracao += resultado; //Concatena o resultado com a =s narrações existentes.
+                            string.Format("{0} atacou {1} usado {2} com o dano {3}. ", atacante.Nome, oponente.Nome, ataqueUsado, dano);
+                        d.Narracao += resultado; //Concatena o resultado com as narrações existentes.
                         d.Resultados.Add(resultado);//Adiciona o resultado atual na lista de resultados.
                     }
                     else if (atacante.PersonagemHabilidades.Count != 0)//Verifica se o personagem tem habilidades.
@@ -209,7 +208,7 @@ namespace RpgApi.Controllers
                             oponente.PontosVida = oponente.PontosVida - (int)dano;
                         
                         resultado =
-                            string.Format("{0} atacou {1} usando {2} com o dano {3}.", atacante.Nome, oponente.Nome, ataqueUsado, dano);
+                            string.Format("{0} atacou {1} usando {2} com o dano {3}. ", atacante.Nome, oponente.Nome, ataqueUsado, dano);
                         d.Narracao += resultado;
                         d.Resultados.Add(resultado);
                     }
@@ -224,7 +223,7 @@ namespace RpgApi.Controllers
 
                         d.Id = 0;//Zerar o Id para poder dalvar os daddos de disputas em erro de chave.
                         d.DataDisputa = DateTime.Now;
-                        _context.Disputas.Add(d);
+                        _context.TB_DISPUTAS.Add(d);
                         await _context.SaveChangesAsync();
 
                     }
@@ -245,7 +244,7 @@ namespace RpgApi.Controllers
 
                 //Código após o fechamento do While. Atualizará os pontos de vida,
                 //disputas, vitórias e derrotas de todos os personagens ao final das batalhas
-                _context.Personagens.UpdateRange(personagens);
+                _context.TB_PERSONAGENS.UpdateRange(personagens);
                 await _context.SaveChangesAsync();
 
                 return Ok(d);
