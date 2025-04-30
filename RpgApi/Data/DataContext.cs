@@ -7,6 +7,7 @@ using RpgApi.Models;
 using RpgApi.Models.Enuns;
 using RpgApi.Utils;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using RpgApi.Controllers;
 
 //Fazer até o exer 9
 
