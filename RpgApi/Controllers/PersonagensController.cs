@@ -119,7 +119,7 @@ namespace RpgApi.Controllers
             { 
                 int linhasAfetadas = 0; 
                 Personagem? pEncontrado = 
-                await _context.Personagens.FirstOrDefaultAsync(pBusca => pBusca.Id == p.Id); 
+                await _context.TB_PERSONAGENS.FirstOrDefaultAsync(pBusca => pBusca.Id == p.Id); 
                 pEncontrado.PontosVida = 100; 
  
                 bool atualizou = await TryUpdateModelAsync<Personagem>(pEncontrado, "p", 
